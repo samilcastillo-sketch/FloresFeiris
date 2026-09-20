@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Túnel Infinito de Girasoles</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 30%, #2e1065 0%, #0f172a 60%, #020617 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+    }
+
+    /* Instrucción inicial */
+    .instruction {
+      position: absolute;
+      top: 5%;
+      font-size: 1.1rem;
+      color: #facc15;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+      animation: pulse 2s infinite;
+      transition: opacity 0.5s;
+      z-index: 300;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 10px 22px;
+      border-radius: 20px;
+      border: 1px solid rgba(250, 204, 21, 0.4);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* Contenedor del túnel de girasoles */
+    .tunnel-container {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      perspective: 500px;
+      overflow: hidden;
+    }
+
+    .flower-plane {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Semillas */
+    .seed {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #f59e0b;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #facc15;
+      z-index: 200;
+      pointer-events: none;
+      transition: transform 0.8s ease-in, opacity 0.2s;
+    }
+
+    /* Contenedor del Girasol */
+    .sunflower {
+      position: absolute;
+      transform-origin: bottom center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transform: scale(0);
+      transition: transform 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+    }
+
+    .sunflower.grow {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    @keyframes sway {
+      0%, 100% { transform: scale(1) rotate(-1.5deg); }
+      50% { transform: scale(1) rotate(1.5deg); }
+    }
+
+    .sunflower.sway {
+      animation: sway 4s ease-in-out infinite;
+    }
+
+    /* Cabeza y componentes del Girasol */
+    .flower-head {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .petal {
+      position: absolute;
+      background: linear-gradient(to top, #facc15, #fef08a);
+      border-radius: 50% 50% 20% 20%;
+      transform-origin: bottom center;
+      box-shadow: 0 0 5px rgba(250, 204, 21, 0.4);
+    }
+
+    .center-disk {
+      position: absolute;
+      background: radial-gradient(circle, #78350f, #451a03);
+      border-radius: 50%;
+      z-index: 5;
+    }
+
+    .stem {
+      background: linear-gradient(to top, #14532d, #22c55e);
+      border-radius: 2px;
+    }
+
+    /* Mensaje Central */
+    .card-message {
+      position: absolute;
+      top: 42%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.85);
+      background: rgba(15, 23, 42, 0.94);
+      border: 2px solid #facc15;
+      box-shadow: 0 0 40px rgba(250, 204, 21, 0.6), inset 0 0 15px rgba(250, 204, 21, 0.2);
+      backdrop-filter: blur(12px);
+      padding: 26px 32px;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 480px;
+      width: 88%;
+      opacity: 0;
+      transition: opacity 1.2s ease, transform 1.2s ease;
+      z-index: 500;
+    }
+
+    .card-message.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .card-message h2 {
+      color: #facc15;
+      font-size: 1.35rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+    }
+
+    .card-message p {
+      color: #f3f4f6;
+      font-size: 0.92rem;
+      line-height: 1.45;
+      margin-bottom: 5px;
+    }
+
+    .card-message .highlight {
+      color: #facc15;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="instruction" id="instruction" onclick="startLluviaSemillas()">
+    ✨ Haz clic para sembrar el campo de girasoles ✨
+  </div>
+
+  <div class="card-message" id="cardMessage">
+    <h2>🌻 Un Mar de Girasoles Para Ti 🌻</h2>
+    <p>Si pudiera regalarte un girasol por cada instante en que me haces sonreír, ni este campo infinito bastaría.</p>
+    <p>Tu luz ilumina cada rincón de mi mundo, volviendo brillante lo ordinario.</p>
+    <p>Que la magia de estas flores te envuelva hoy y siempre.</p>
+    <p class="highlight">Te quiero muchísimo. ❤️</p>
+  </div>
+
+  <div class="tunnel-container">
+    <div class="flower-plane" id="plane"></div>
+  </div>
+
+  <script>
+    let isStarted = false;
+
+    function startLluviaSemillas() {
+      if (isStarted) return;
+      isStarted = true;
+
+      document.getElementById('instruction').style.opacity = '0';
+
+      const plane = document.getElementById('plane');
+      
+      const layers = 10;
+      const flowersPerLayer = 22; 
+      let count = 0;
+
+      for (let l = 0; l < layers; l++) {
+        const depth = l / (layers - 1); // 0 (fondo) a 1 (frente)
+        for (let f = 0; f < flowersPerLayer; f++) {
+          count++;
+          setTimeout(() => {
+            dropSeedAndGrow(plane, depth, f, flowersPerLayer);
+          }, count * 12);
+        }
+      }
+
+      setTimeout(() => {
+        document.getElementById('cardMessage').classList.add('show');
+      }, 3200);
+    }
+
+    function dropSeedAndGrow(container, depth, index, totalInLayer) {
+      const seed = document.createElement('div');
+      seed.className = 'seed';
+
+      // Distribución horizontal
+      const spreadX = (index / (totalInLayer - 1)) * 110 - 5;
+      
+      // Rango vertical ajustado: del 58% (fondo) al 85% (adelante) para no subir en columnas
+      const spreadY = 58 + (depth * 27); 
+
+      seed.style.left = `${spreadX}%`;
+      seed.style.top = `-20px`;
+
+      document.body.appendChild(seed);
+
+      const targetY = (window.innerHeight * spreadY) / 100;
+
+      setTimeout(() => {
+        seed.style.transform = `translateY(${targetY}px) rotate(${Math.random() * 360}deg)`;
+      }, 10);
+
+      setTimeout(() => {
+        seed.style.opacity = '0';
+        createSunflower(container, spreadX, spreadY, depth);
+        setTimeout(() => seed.remove(), 200);
+      }, 700);
+    }
+
+    function createSunflower(container, x, y, depth) {
+      const flower = document.createElement('div');
+      flower.className = 'sunflower';
+      flower.style.left = `${x}%`;
+      flower.style.top = `${y}%`;
+
+      // Crecimiento progresivo: las flores de adelante son significativamente más grandes
+      const scale = 0.22 + (depth * depth) * 1.35; 
+      const brightness = 50 + depth * 50;
+      const zIndex = Math.floor(depth * 300);
+
+      flower.style.zIndex = zIndex;
+      flower.style.filter = `brightness(${brightness}%)`;
+
+      const headSize = 95 * scale;
+      const stemHeight = (20 + Math.random() * 15) * scale; // Tallos más reducidos
+
+      // Cabeza del Girasol
+      const head = document.createElement('div');
+      head.className = 'flower-head';
+      head.style.width = `${headSize}px`;
+      head.style.height = `${headSize}px`;
+
+      const center = document.createElement('div');
+      center.className = 'center-disk';
+      center.style.width = `${headSize * 0.38}px`;
+      center.style.height = `${headSize * 0.38}px`;
+      head.appendChild(center);
+
+      const petalCount = 12;
+      for (let i = 0; i < petalCount; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.width = `${15 * scale}px`;
+        petal.style.height = `${headSize * 0.46}px`;
+        petal.style.transform = `rotate(${i * (360 / petalCount)}deg) translateY(-${headSize * 0.2}px)`;
+        head.appendChild(petal);
+      }
+
+      // Tallo
+      const stem = document.createElement('div');
+      stem.className = 'stem';
+      stem.style.width = `${5 * scale}px`;
+      stem.style.height = `${stemHeight}px`;
+
+      flower.appendChild(head);
+      flower.appendChild(stem);
+
+      container.appendChild(flower);
+
+      setTimeout(() => {
+        flower.classList.add('grow');
+      }, 30);
+
+      setTimeout(() => {
+        flower.classList.add('sway');
+        flower.style.animationDelay = `${Math.random() * 3}s`;
+      }, 1200);
+    }
+  </script>
+</body>
+</html>

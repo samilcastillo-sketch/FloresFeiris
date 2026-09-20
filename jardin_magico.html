@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jardín Mágico de Flores Amarillas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #020617, #000000);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+    }
+
+    /* Luna mágica */
+    .moon {
+      position: absolute;
+      top: 40px;
+      width: 80px;
+      height: 80px;
+      background: #fef08a;
+      border-radius: 50%;
+      box-shadow: 0 0 40px #fef08a, 0 0 80px rgba(254, 240, 138, 0.4);
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: floatMoon 4s ease-in-out infinite;
+    }
+
+    .moon:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 60px #fef08a, 0 0 100px rgba(254, 240, 138, 0.8);
+    }
+
+    @keyframes floatMoon {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .instruction {
+      position: absolute;
+      top: 140px;
+      color: #fef08a;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px #fef08a;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    /* Escena de flores */
+    .garden-container {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 70vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 30px;
+    }
+
+    /* Flor estilo Neón / Glow */
+    .glow-flower {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform-origin: bottom center;
+      opacity: 0;
+      transform: scale(0);
+      transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
+    }
+
+    .glow-flower.bloom {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .head {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .petal {
+      position: absolute;
+      width: 18px;
+      height: 45px;
+      background: #facc15;
+      border-radius: 50% 50% 20% 20%;
+      transform-origin: bottom center;
+      box-shadow: 0 0 15px #facc15, 0 0 30px #eab308;
+    }
+
+    .center-glow {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: #78350f;
+      border-radius: 50%;
+      box-shadow: 0 0 15px #f59e0b;
+      z-index: 5;
+    }
+
+    .stem-glow {
+      width: 6px;
+      height: 220px;
+      background: #22c55e;
+      box-shadow: 0 0 12px #22c55e;
+      border-radius: 3px;
+    }
+
+    /* Luciérnagas */
+    .firefly {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #fef08a;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #fef08a, 0 0 20px #fef08a;
+      pointer-events: none;
+      animation: fly 6s infinite ease-in-out;
+    }
+
+    @keyframes fly {
+      0% { transform: translate(0, 0) scale(0.8); opacity: 0.3; }
+      50% { transform: translate(40px, -60px) scale(1.4); opacity: 1; }
+      100% { transform: translate(-30px, -120px) scale(0.8); opacity: 0; }
+    }
+
+    /* Mensaje central */
+    .card-message {
+      position: absolute;
+      top: 30%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #facc15;
+      box-shadow: 0 0 25px rgba(250, 204, 21, 0.3);
+      padding: 25px;
+      border-radius: 15px;
+      text-align: center;
+      max-width: 450px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 1.5s, transform 1.5s;
+      z-index: 20;
+    }
+
+    .card-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .card-message h2 {
+      color: #facc15;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px #facc15;
+    }
+
+    .card-message p {
+      color: #f3f4f6;
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="moon" id="moon" onclick="activateGarden()"></div>
+  <div class="instruction" id="instruction">✨ Haz clic en la luna para encender el jardín ✨</div>
+
+  <div class="card-message" id="cardMessage">
+    <h2>🌻 Feliz Día de las Flores Amarillas 🌻</h2>
+    <p>Cada girasol que ves aquí es el latido de mi corazón.</p>
+    <p>Así como el sol ilumina los campos, tú iluminas mi vida.</p>
+    <p>Que estas flores te recuerden lo especial que eres.</p>
+    <p><strong>Te quiero.</strong></p>
+  </div>
+
+  <div class="garden-container" id="garden"></div>
+
+  <script>
+    let active = false;
+
+    function activateGarden() {
+      if (active) return;
+      active = true;
+
+      document.getElementById('instruction').style.opacity = '0';
+      
+      // Crear flores con luz
+      const garden = document.getElementById('garden');
+      const flowerCount = 5;
+
+      for (let i = 0; i < flowerCount; i++) {
+        const flower = createGlowFlower();
+        garden.appendChild(flower);
+
+        setTimeout(() => {
+          flower.classList.add('bloom');
+        }, i * 300);
+      }
+
+      // Generar luciérnagas
+      for (let i = 0; i < 20; i++) {
+        createFirefly();
+      }
+
+      // Mostrar mensaje final
+      setTimeout(() => {
+        document.getElementById('cardMessage').classList.add('show');
+      }, 2000);
+    }
+
+    function createGlowFlower() {
+      const flower = document.createElement('div');
+      flower.className = 'glow-flower';
+
+      const head = document.createElement('div');
+      head.className = 'head';
+
+      const center = document.createElement('div');
+      center.className = 'center-glow';
+      head.appendChild(center);
+
+      for (let i = 0; i < 10; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'petal';
+        petal.style.transform = `rotate(${i * 36}deg) translateY(-20px)`;
+        head.appendChild(petal);
+      }
+
+      const stem = document.createElement('div');
+      stem.className = 'stem-glow';
+
+      flower.appendChild(head);
+      flower.appendChild(stem);
+
+      return flower;
+    }
+
+    function createFirefly() {
+      const fly = document.createElement('div');
+      fly.className = 'firefly';
+      fly.style.left = `${Math.random() * 100}vw`;
+      fly.style.top = `${60 + Math.random() * 30}vh`;
+      fly.style.animationDelay = `${Math.random() * 4}s`;
+      document.body.appendChild(fly);
+    }
+  </script>
+</body>
+</html>

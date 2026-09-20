@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Una Sorpresa Amarilla Para Ti</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at center, #1e1b4b, #0f172a, #050814);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      color: #fff;
+    }
+
+    /* Mensaje de instrucción */
+    .instruction {
+      position: absolute;
+      top: 8%;
+      font-size: 1.2rem;
+      color: #facc15;
+      text-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+      animation: pulse 2s infinite;
+      transition: opacity 0.5s;
+      z-index: 30;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(0.95); opacity: 0.7; }
+    }
+
+    /* Contenedor de la Caja */
+    .box-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      cursor: pointer;
+      z-index: 20;
+      transition: transform 0.3s;
+    }
+
+    .box-container:hover {
+      transform: scale(1.05);
+    }
+
+    .box-body {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 130px;
+      background: #854d0e;
+      border-radius: 12px;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+      overflow: hidden;
+    }
+
+    .box-body::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 100%;
+      background: #facc15;
+    }
+
+    .box-lid {
+      position: absolute;
+      top: 25px;
+      left: -10px;
+      width: 200px;
+      height: 35px;
+      background: #a16207;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+      z-index: 2;
+      transition: transform 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s;
+    }
+
+    .box-lid::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 100%;
+      background: #facc15;
+    }
+
+    .bow {
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 25px;
+      background: #facc15;
+      border-radius: 25px 25px 0 0;
+      z-index: 3;
+      box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+    }
+
+    /* Animación al hacer clic */
+    .box-container.open .box-lid {
+      transform: translateY(-160px) rotate(-25deg);
+      opacity: 0;
+    }
+
+    .box-container.open .box-body {
+      animation: fadeOutBox 0.8s forwards 0.4s;
+    }
+
+    @keyframes fadeOutBox {
+      to { opacity: 0; transform: scale(0.6) translateY(100px); }
+    }
+
+    /* Escena Principal del Corazón */
+    .heart-scene {
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    /* Girasoles en forma de corazón con efecto 3D */
+    .heart-flower {
+      position: absolute;
+      width: 36px;
+      height: 36px;
+      margin-left: -18px;
+      margin-top: -18px;
+      opacity: 0;
+      transform: scale(0) rotate(0deg);
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+      filter: drop-shadow(0 0 8px rgba(250, 204, 21, 0.6));
+    }
+
+    .heart-flower.bloom {
+      opacity: 1;
+      transform: scale(1) rotate(360deg);
+    }
+
+    /* Carta con el Mensaje en el Centro */
+    .card-letter {
+      position: absolute;
+      width: 280px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid #facc15;
+      border-radius: 18px;
+      padding: 20px 15px;
+      text-align: center;
+      box-shadow: 0 0 35px rgba(250, 204, 21, 0.5), inset 0 0 15px rgba(250, 204, 21, 0.2);
+      backdrop-filter: blur(5px);
+      opacity: 0;
+      transform: scale(0);
+      transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.8s;
+      z-index: 10;
+    }
+
+    .card-letter.show {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .card-letter h2 {
+      color: #facc15;
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 8px #facc15;
+    }
+
+    .card-letter p {
+      color: #f3f4f6;
+      font-size: 0.85rem;
+      line-height: 1.35;
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="instruction" id="instruction">🎁 Haz clic en el regalo para abrir tu sorpresa 🎁</div>
+
+  <div class="box-container" id="giftBox" onclick="openGift()">
+    <div class="bow"></div>
+    <div class="box-lid"></div>
+    <div class="box-body"></div>
+  </div>
+
+  <!-- Lienzo donde se formará el corazón de girasoles -->
+  <div class="heart-scene" id="heartScene">
+    <!-- Carta central -->
+    <div class="card-letter" id="cardLetter">
+      <h2>🌻 Feliz día de las flores amarillas 🌻</h2>
+      <p>cada girasol que ves aquí es el latido de mi corazón.</p>
+      <p>Así como el sol ilumina los campos, tú iluminas mi vida.</p>
+      <p>Que estas flores te recuerden lo especial que eres.</p>
+      <p style="margin-top: 8px; font-weight: bold; color: #facc15; font-size: 0.95rem;">Te quiero.</p>
+    </div>
+  </div>
+
+  <script>
+    let isOpen = false;
+
+    function openGift() {
+      if (isOpen) return;
+      isOpen = true;
+
+      document.getElementById('instruction').style.opacity = '0';
+      document.getElementById('giftBox').classList.add('open');
+
+      // 1. Brotan los girasoles formando el corazón 3D desde la caja
+      setTimeout(() => {
+        buildHeartOfSunflowers();
+      }, 400);
+
+      // 2. Aparece la carta con el texto en el centro del corazón
+      setTimeout(() => {
+        document.getElementById('cardLetter').classList.add('show');
+      }, 1600);
+    }
+
+    function buildHeartOfSunflowers() {
+      const container = document.getElementById('heartScene');
+      const totalFlowers = 48; // Cantidad para formar un corazón tupido
+      const centerX = 250;
+      const centerY = 230;
+      const scale = 13.5; // Tamaño del corazón alrededor de la carta
+
+      for (let i = 0; i < totalFlowers; i++) {
+        const t = (Math.PI * 2 / totalFlowers) * i;
+        
+        // Ecuación matemática exacta del corazón
+        const x = 16 * Math.pow(Math.sin(t), 3);
+        const y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+
+        const posX = centerX + x * scale;
+        const posY = centerY + y * scale;
+
+        createFlower3D(container, posX, posY, i * 45);
+      }
+    }
+
+    function createFlower3D(container, x, y, delay) {
+      const flower = document.createElement('div');
+      flower.className = 'heart-flower';
+      flower.style.left = `${x}px`;
+      flower.style.top = `${y}px`;
+
+      // SVG del girasol
+      flower.innerHTML = `
+        <svg viewBox="0 0 40 40" width="100%" height="100%">
+          <g transform="translate(20,20)">
+            ${Array.from({length: 12}).map((_, j) => `
+              <ellipse cx="0" cy="-11" rx="3.5" ry="8" fill="#facc15" transform="rotate(${j * 30})" />
+            `).join('')}
+            <circle cx="0" cy="0" r="5.5" fill="#78350f" />
+          </g>
+        </svg>
+      `;
+
+      container.appendChild(flower);
+
+      // Efecto de florecimiento en espiral ascendente
+      setTimeout(() => {
+        flower.classList.add('bloom');
+      }, delay);
+    }
+  </script>
+</body>
+</html>
